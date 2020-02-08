@@ -1,0 +1,51 @@
+{% extends 'layouts/main.html' %}
+{% block title %}Fyyur | Venues{% endblock %}
+{% block content %}
+{%for key,value in sorted_venue_dict.items()%}
+<h3>{{ key }}, {{ city_state_dict[key] }}</h3>
+
+<ul class="items">
+	<li>
+			{% for venue_name in value.split(',') %}
+			<a href="/venues/{{venue_id_dict[venue_name.strip()]}}">
+			<i class="fas fa-music"></i>
+	 <div class="item">
+			<h5> {{ venue_name}} </h5>
+		</div>
+		{% set toDeleteId = venue_id_dict[venue_name.strip()] %}
+		{% set venueName =  venue_name%}
+	</a> <button class="delete_venue" name='{{venueName}}' value={{toDeleteId}} >&cross;
+	</button>
+
+	{% endfor %}
+	</li>
+</ul>
+
+{% endfor %}
+<script>
+// function myFunction() {
+const delete_button = document.getElementsByClassName('delete_venue');
+for (let i = 0 ;i < delete_button.length;i++){
+	delete_button[i].onclick = function(e){
+	console.log('event',e);
+	const deleted_id = e.target.value;
+	const deleted_name = e.target.name;
+	fetch('/venues/'+ deleted_id ,{
+    method: 'DELETE',
+		body: JSON.stringify({
+			'venue_to_delete' : deleted_id,
+			'venue_to_delete_name' : deleted_name
+		}),
+    headers:{
+     'Content-Type': 'application/json'
+		}
+	}).then(response => {
+         if (response.redirected) {
+             window.location.href = response.url;
+         }
+     })
+	  }
+}
+
+</script>
+{% endblock %}
